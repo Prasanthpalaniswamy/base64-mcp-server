@@ -39,7 +39,14 @@ if __name__ == "__main__":
 
     if transport in ["http", "https"]:
         import uvicorn
-        app = mcp.streamable_http_app()   # 🔥 IMPORTANT
+        from fastapi import FastAPI
+         # Create FastAPI app
+        app = FastAPI()
+         # MCP app mounted inside FastAPI
+        mcp_app = mcp.streamable_http_app()
+        # app = mcp.streamable_http_app()   # 🔥 IMPORTANT
+         # Mount MCP under /mcp
+        app.mount("/mcp", mcp_app)
          # ✅ ADD THIS: health check route
         @app.get("/")
         def root():
