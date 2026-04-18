@@ -39,27 +39,48 @@ if __name__ == "__main__":
 
     if transport in ["http", "https"]:
         import uvicorn
-        # from fastapi import FastAPI
-         # Create FastAPI app
-        # app = FastAPI()
-         # MCP app mounted inside FastAPI
-        # mcp_app = mcp.streamable_http_app()
-        app = mcp.streamable_http_app()   # 🔥 IMPORTANT
-         # Mount MCP under /mcp
-        # app.mount("/mcp", mcp_app)
-         # ✅ ADD THIS: health check route
-        # @app.get("/")
-        # def root():
-        #     return {
-        #         "status": "Base64 MCP Server is running",
-        #         "message": "Use /mcp for MCP communication"
-        #     }
+        from starlette.applications import Starlette
+
+        raw_app = mcp.streamable_http_app()
+
+        # Wrap MCP app to avoid host validation issues
+        app = Starlette()
+        app.mount("/", raw_app)
+
         port = int(os.environ.get("PORT", 8000))
+
         print("MCP HTTP server starting...")
-        uvicorn.run(app,
-                host="0.0.0.0",
-                port=port,
-                proxy_headers=True,
-                forwarded_allow_ips="*")
+
+        uvicorn.run(
+            app,
+            host="0.0.0.0",
+            port=port
+        )
+
+
+
+        # import uvicorn
+        # # from fastapi import FastAPI
+        #  # Create FastAPI app
+        # # app = FastAPI()
+        #  # MCP app mounted inside FastAPI
+        # # mcp_app = mcp.streamable_http_app()
+        # app = mcp.streamable_http_app()   # 🔥 IMPORTANT
+        #  # Mount MCP under /mcp
+        # # app.mount("/mcp", mcp_app)
+        #  # ✅ ADD THIS: health check route
+        # # @app.get("/")
+        # # def root():
+        # #     return {
+        # #         "status": "Base64 MCP Server is running",
+        # #         "message": "Use /mcp for MCP communication"
+        # #     }
+        # port = int(os.environ.get("PORT", 8000))
+        # print("MCP HTTP server starting...")
+        # uvicorn.run(app,
+        #         host="0.0.0.0",
+        #         port=port,
+        #         proxy_headers=True,
+        #         forwarded_allow_ips="*")
     else:
         mcp.run()
