@@ -41,15 +41,15 @@ async def healthcheck(request):
     return JSONResponse({
         "status": "ok",
         "message": "Base64 MCP Server is running",
-        "mcp_endpoint": "/mcp"
+        "mcp_endpoint": "/"
     })
 
 
-raw_app = mcp.streamable_http_app()
+mcp_app = mcp.streamable_http_app()
 
 app = Starlette(routes=[
-    Route("/", healthcheck),
-    Mount("/mcp", app=raw_app),
+    Route("/health", healthcheck),
+    Mount("/", app=mcp_app),
 ])
 
 
