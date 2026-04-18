@@ -33,14 +33,14 @@ def decode_credentials_tool(encoded_data: str) -> dict:
 
 
 if __name__ == "__main__":
-    transport = os.getenv("MCP_TRANSPORT", "stdio")
+    transport = os.getenv("MCP_TRANSPORT", "stdio").lower()
 
     print(f"Starting MCP server with transport: {transport}")
 
-    if transport == "http":
+    if transport in ["http", "https"]:
         import uvicorn
         app = mcp.streamable_http_app()   # 🔥 IMPORTANT
-
-        uvicorn.run(app, host="127.0.0.1", port=8000)
+        port = int(os.environ.get("PORT", 8000))
+        uvicorn.run(app, host="0.0.0.0", port=port)
     else:
         mcp.run()
