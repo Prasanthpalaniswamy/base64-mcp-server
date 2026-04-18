@@ -48,13 +48,14 @@ if __name__ == "__main__":
          # Mount MCP under /mcp
         # app.mount("/mcp", mcp_app)
          # ✅ ADD THIS: health check route
-        @app.get("/")
-        def root():
-            return {
-                "status": "Base64 MCP Server is running",
-                "message": "Use /mcp for MCP communication"
-            }
+        # @app.get("/")
+        # def root():
+        #     return {
+        #         "status": "Base64 MCP Server is running",
+        #         "message": "Use /mcp for MCP communication"
+        #     }
         port = int(os.environ.get("PORT", 8000))
+        print("MCP HTTP server starting...")
         uvicorn.run(app, host="0.0.0.0", port=port)
     else:
         mcp.run()
