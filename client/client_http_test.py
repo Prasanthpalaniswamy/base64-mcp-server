@@ -4,7 +4,8 @@ from mcp.client.session import ClientSession
 import json
 
 async def main():
-    async with streamablehttp_client("http://127.0.0.1:8000/mcp") as streams:
+    # async with streamablehttp_client("http://127.0.0.1:8000/mcp") as streams:
+    async with streamablehttp_client("https://base64-mcp-server.onrender.com") as streams:
 
         reader = streams[0]
         writer = streams[1]
