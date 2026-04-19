@@ -6,7 +6,7 @@ from starlette.routing import Route, Mount
 from mcp.server.fastmcp import FastMCP
 from tools.base64_tools import encode_credentials, decode_credentials
 
-mcp = FastMCP("Base64 Tools Server")
+mcp = FastMCP("Base64 Tools Server", host="0.0.0.0")
 
 
 @mcp.tool(description=(

@@ -1,12 +1,32 @@
 import asyncio
+import httpx
 from mcp.client.streamable_http import streamablehttp_client
 from mcp.client.session import ClientSession
 import json
 
 async def main():
-    # Local URL: http://127.0.0.1:8000/mcp
-    # Render URL: https://base64-mcp-server.onrender.com/mcp
-    async with streamablehttp_client("https://base64-mcp-server.onrender.com/mcp") as streams:
+    # Remove the manual Host header entirely
+    headers = {} 
+
+    # Keep your factory, but let it be simple
+    def httpx_client_factory(headers=None, timeout=None, auth=None):
+            return httpx.AsyncClient(
+                headers=headers, # Use the headers passed by the SDK
+                timeout=timeout,
+                auth=auth,
+                follow_redirects=True,
+                http2=False, # Crucial
+                # This forces the client to be less aggressive with connection reuse
+                limits=httpx.Limits(max_connections=10, max_keepalive_connections=0),
+            )
+
+    headers_override = headers
+
+    async with streamablehttp_client(
+        "https://base64-mcp-server.onrender.com/mcp",
+        headers=headers,
+        httpx_client_factory=httpx_client_factory,
+    ) as streams:
 
         reader = streams[0]
         writer = streams[1]
