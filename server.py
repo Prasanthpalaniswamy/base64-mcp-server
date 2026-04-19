@@ -51,12 +51,13 @@ mcp_app = mcp.streamable_http_app()
 
 @asynccontextmanager
 async def lifespan(app):
-    async with mcp_app.router.lifespan_context(mcp_app):
+    # async with mcp_app.router.lifespan_context(mcp_app):
+    async with mcp.session_manager.run():
         yield
 
 app = Starlette(routes=[
     Route("/health", healthcheck),
-    Mount("/", app=mcp_app),
+    Mount("/mcp", app=mcp_app),
 ], lifespan=lifespan)
 
 
