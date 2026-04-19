@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Route, Mount
@@ -41,16 +42,22 @@ async def healthcheck(request):
     return JSONResponse({
         "status": "ok",
         "message": "Base64 MCP Server is running",
-        "mcp_endpoint": "/"
+        "mcp_endpoint": "/mcp"
     })
 
 
 mcp_app = mcp.streamable_http_app()
 
+
+@asynccontextmanager
+async def lifespan(app):
+    async with mcp_app.router.lifespan_context(mcp_app):
+        yield
+
 app = Starlette(routes=[
     Route("/health", healthcheck),
     Mount("/", app=mcp_app),
-])
+], lifespan=lifespan)
 
 
 if __name__ == "__main__":
